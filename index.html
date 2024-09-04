@@ -3,255 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kick Dog - Streaming Platform for Dogs</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Firefox Dog Browser</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-primary: #53FC18;
-            --color-secondary: #1C1C1C;
-            --color-background: #0E0E0E;
-            --color-text: #FFFFFF;
-            --color-text-muted: #999999;
+            --color-background: #F9F9FA;
+            --color-toolbar: #FFFFFF;
+            --color-text: #15141A;
+            --color-border: #CFCFD8;
+            --color-tab-active: #FFFFFF;
+            --color-tab-inactive: #F0F0F4;
         }
 
         body, html {
             margin: 0;
             padding: 0;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--color-background);
             color: var(--color-text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        header {
-            background-color: var(--color-secondary);
-            padding: 10px 20px;
+        .browser-window {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--color-border);
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            margin: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tab-bar {
+            display: flex;
+            background-color: var(--color-tab-inactive);
+            padding: 8px 8px 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .tab {
+            background-color: var(--color-tab-inactive);
+            border: 1px solid var(--color-border);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 8px 16px;
+            margin-right: 4px;
+            font-size: 12px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            max-width: 200px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
-        .logo {
+        .tab.active {
+            background-color: var(--color-tab-active);
+            border-bottom: 1px solid var(--color-tab-active);
+            margin-bottom: -1px;
+        }
+
+        .tab img {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+        }
+
+        .toolbar {
+            background-color: var(--color-toolbar);
+            padding: 8px;
             display: flex;
             align-items: center;
         }
 
-        .logo img {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
+        .nav-buttons {
+            display: flex;
+            margin-right: 8px;
         }
 
-        .logo h1 {
-            font-size: 24px;
-            margin: 0;
-            color: var(--color-primary);
+        .nav-button {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            background-color: var(--color-toolbar);
+            border: none;
+            margin-right: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #5B5B66;
         }
 
-        nav a {
+        .address-bar {
+            flex-grow: 1;
+            background-color: var(--color-tab-inactive);
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 14px;
             color: var(--color-text);
-            text-decoration: none;
-            margin-left: 20px;
-            font-weight: 500;
-        }
-
-        main {
-            display: flex;
-            padding: 20px;
         }
 
         .content {
-            flex: 1;
-            margin-right: 20px;
+            flex-grow: 1;
+            background-color: var(--color-toolbar);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .stream-container {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        .logo {
+            width: 512px;
+            height: 512px;
             margin-bottom: 20px;
+        }
+
+        .search-bar {
+            width: 100%;
+            max-width: 584px;
+            padding: 10px;
+            border: 1px solid var(--color-border);
+            border-radius: 24px;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 20px;
+        }
+
+        .search-bar:focus {
+            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+        }
+
+        .shortcuts {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .shortcut {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--color-text);
+        }
+
+        .shortcut-icon {
+            width: 64px;
+            height: 64px;
+            background-color: #fff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
-        .stream-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .shortcut-icon img {
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            object-fit: contain;
         }
 
-        .viewer-count {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.6);
-            color: var(--color-text);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .stream-info h2 {
-            margin: 0 0 10px 0;
-        }
-
-        .stream-info p {
-            color: var(--color-text-muted);
-            margin: 0;
-        }
-
-        .sidebar {
-            width: 300px;
-        }
-
-        .recommended-channels h3, .categories h3 {
-            margin-top: 0;
-            color: var(--color-primary);
-        }
-
-        .channel, .category {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            text-decoration: none;
-            color: var(--color-text);
-            transition: background-color 0.2s ease;
-            padding: 5px;
-            border-radius: 5px;
-        }
-
-        .channel:hover, .category:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .channel img, .category img {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            border-radius: 50%;
-            object-fit: cover;
-            background-color: white;
-        }
-
-        .channel-info h4, .category-info h4 {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .channel-info p, .category-info p {
-            margin: 0;
-            color: var(--color-text-muted);
-            font-size: 14px;
-        }
-
-        .button {
-            background-color: var(--color-primary);
-            color: var(--color-secondary);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .button:hover {
-            background-color: #4AE316;
+        .shortcut-name {
+            font-size: 12px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="logo">
-            <img src="https://i.postimg.cc/SRTRGNk4/Kick-dog-no-chat.png" alt="Kick Dog Logo">
-            <h1>Kick Dog</h1>
+    <div class="browser-window">
+        <div class="tab-bar">
+            <div class="tab active">
+                <img src="https://i.postimg.cc/7LzG9wMc/firefox.png" alt="Firefox Dog Logo">
+                New Tab
+            </div>
         </div>
-        <nav>
-            <a href="#">Browse</a>
-            <a href="#">Following</a>
-            <a href="#">Categories</a>
-        </nav>
-    </header>
-    <main>
+        <div class="toolbar">
+            <div class="nav-buttons">
+                <button class="nav-button">←</button>
+                <button class="nav-button">→</button>
+                <button class="nav-button">↻</button>
+            </div>
+            <input type="text" class="address-bar" value="Search with Google or enter address" readonly>
+        </div>
         <div class="content">
-            <div class="stream-container">
-                <iframe 
-                    src="https://player.vimeo.com/video/1084537?autoplay=1&loop=1&background=1" 
-                    width="100%" 
-                    height="100%" 
-                    frameborder="0" 
-                    allow="autoplay; fullscreen; picture-in-picture" 
-                    allowfullscreen
-                ></iframe>
-                <div class="viewer-count" id="viewerCount">69,420 viewers</div>
-            </div>
-            <div class="stream-info">
-                <h2>Kick Dog Gameplay Stream</h2>
-                <p>Streamer: GamingDog123 • Game: Kick Dog Adventures</p>
+            <img src="https://i.postimg.cc/7LzG9wMc/firefox.png" alt="Firefox Dog Logo" class="logo">
+            <input type="text" class="search-bar" placeholder="Search with Google or enter address">
+            <div class="shortcuts">
+                <a href="https://x.com/Cobratate" class="shortcut" target="_blank">
+                    <div class="shortcut-icon">
+                        <img src="https://cdn.cms-twdigitalassets.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.2560.png" alt="Twitter X Logo">
+                    </div>
+                    <span class="shortcut-name">Twitter</span>
+                </a>
+                <a href="https://t.me/FirefoxDog" class="shortcut" target="_blank">
+                    <div class="shortcut-icon">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Telegram_2019_Logo.svg/182px-Telegram_2019_Logo.svg.png" alt="Telegram Logo">
+                    </div>
+                    <span class="shortcut-name">Telegram</span>
+                </a>
+                <a href="https://dexscreener.com" class="shortcut" target="_blank">
+                    <div class="shortcut-icon">
+                        <img src="https://cdn.prod.website-files.com/6421d264d066fd2b24b91b20/661375b92a7e161501f4b5e5_dexscreener.322a5a2d.png" alt="DexScreener Logo">
+                    </div>
+                    <span class="shortcut-name">DexScreener</span>
+                </a>
+                <a href="https://pump.fun" class="shortcut" target="_blank">
+                    <div class="shortcut-icon">
+                        <img src="https://pump.fun/icon.png?c2a22dd8671140c9" alt="Pump Fun Logo">
+                    </div>
+                    <span class="shortcut-name">Pump Fun</span>
+                </a>
             </div>
         </div>
-        <div class="sidebar">
-            <div class="recommended-channels">
-                <h3>Recommended Channels</h3>
-                <a href="https://x.com/Cobratate" class="channel">
-                    <img src="https://cdn.cms-twdigitalassets.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.2560.png" alt="Twitter X Logo">
-                    <div class="channel-info">
-                        <h4>Twitter X</h4>
-                        <p>Social Media</p>
-                    </div>
-                </a>
-                <a href="https://t.me/kickdogonsol" class="channel">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Telegram_2019_Logo.svg/182px-Telegram_2019_Logo.svg.png" alt="Telegram Logo">
-                    <div class="channel-info">
-                        <h4>Telegram</h4>
-                        <p>Messaging</p>
-                    </div>
-                </a>
-            </div>
-            <div class="categories">
-                <h3>Popular Categories</h3>
-                <a href="https://dexscreener.com" class="category">
-                    <img src="https://cdn.prod.website-files.com/6421d264d066fd2b24b91b20/661375b92a7e161501f4b5e5_dexscreener.322a5a2d.png" alt="DexScreener Logo">
-                    <div class="category-info">
-                        <h4>DexScreener</h4>
-                        <p>42.3K viewers</p>
-                    </div>
-                </a>
-                <a href="https://pump.fun" class="category">
-                    <img src="https://pump.fun/icon.png?c2a22dd8671140c9" alt="Pump Fun Logo">
-                    <div class="category-info">
-                        <h4>Pump Fun</h4>
-                        <p>38.7K viewers</p>
-                    </div>
-                </a>
-            </div>
-            <button class="button">Start Streaming</button>
-        </div>
-    </main>
-
-    <script>
-        let viewerCount = 69420;
-        let lastUpdateTime = Date.now();
-
-        function updateViewerCount() {
-            const currentTime = Date.now();
-            const timeDiff = (currentTime - lastUpdateTime) / 1000;
-            lastUpdateTime = currentTime;
-
-            const increase = Math.floor(Math.random() * 21 + 10) * timeDiff;
-            viewerCount += increase;
-
-            const fluctuation = Math.floor(Math.random() * 11) - 5;
-            viewerCount += fluctuation;
-
-            viewerCount = Math.round(viewerCount);
-
-            document.getElementById('viewerCount').textContent = viewerCount.toLocaleString() + ' viewers';
-        }
-
-        setInterval(updateViewerCount, 100);
-    </script>
+    </div>
 </body>
 </html>
